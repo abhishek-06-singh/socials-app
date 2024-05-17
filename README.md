@@ -74,4 +74,4 @@ To get started with development, follow these steps:
 - **tailwindcss:** "^3.4.3"
   - Description: A utility-first CSS framework for creating custom designs quickly.
 
-# _Made with ❤️ by Oyelabs_
+# _Made with ❤️ by Abhishek_
