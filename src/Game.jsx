@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import dinoImg from "./pngwing.com (13).png"; // cute baby dino
+import dinoImg from "./pngwing.com (13).png";
 import treeImg from "./tree1.png";
 
 const Game = () => {
@@ -9,7 +9,7 @@ const Game = () => {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
-  const dragonRef = useRef(null);
+  const dinoRef = useRef(null);
   const obstacleRef = useRef(null);
 
   const handleJump = () => {
@@ -21,6 +21,7 @@ const Game = () => {
     }
   };
 
+  // Move obstacle
   useEffect(() => {
     if (gameOver) return;
     const interval = setInterval(() => {
@@ -32,14 +33,23 @@ const Game = () => {
         return prev - 10;
       });
     }, 30);
-
     return () => clearInterval(interval);
   }, [gameOver]);
 
+  // Accurate collision detection using DOM positions
   useEffect(() => {
     const checkCollision = setInterval(() => {
-      const dragonTop = isJumping ? 80 : 150;
-      if (obstacleLeft < 100 && obstacleLeft > 60 && dragonTop > 130) {
+      if (!dinoRef.current || !obstacleRef.current) return;
+
+      const dinoRect = dinoRef.current.getBoundingClientRect();
+      const obstacleRect = obstacleRef.current.getBoundingClientRect();
+
+      const isColliding =
+        dinoRect.right > obstacleRect.left &&
+        dinoRect.left < obstacleRect.right &&
+        dinoRect.bottom > obstacleRect.top;
+
+      if (isColliding) {
         setGameOver(true);
       }
     }, 30);
@@ -55,7 +65,7 @@ const Game = () => {
 
   return (
     <div
-      className="min-h-screen w-full bg-[url('https://i.imgur.com/2wD3VJA.jpg&quot')] bg-cover bg-center flex flex-col items-center justify-center px-4 py-8"
+      className="min-h-screen w-full bg-[url('https://i.imgur.com/2wD3VJA.jpg')] bg-cover bg-center flex flex-col items-center justify-center px-4 py-8"
       onClick={handleJump}
     >
       <h1 className="text-4xl sm:text-5xl font-bold mb-6 text-white text-center drop-shadow-md">
@@ -66,6 +76,7 @@ const Game = () => {
         <div className="absolute bottom-0 w-full h-1 bg-white"></div>
 
         <img
+          ref={dinoRef}
           src={dinoImg}
           alt="dino"
           className={`absolute left-10 w-16 h-12 sm:w-20 sm:h-16 transition-all duration-150 ${
@@ -74,6 +85,7 @@ const Game = () => {
         />
 
         <img
+          ref={obstacleRef}
           src={treeImg}
           alt="tree"
           className="absolute bottom-0 w-10 sm:w-12 h-16 sm:h-20"
